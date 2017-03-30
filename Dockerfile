@@ -10,7 +10,7 @@ RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 WORKDIR /opt
 
 # Add permissions
-RUN chmod 777 /opt
+RUN chmod -R 777 /opt
 
 ADD ./files/s3cfg /opt/.s3cfg
 ADD ./files/main.sh /opt/main.sh
