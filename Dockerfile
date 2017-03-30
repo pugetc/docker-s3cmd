@@ -9,13 +9,13 @@ RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 
 WORKDIR /opt
 
+# Add permissions
+RUN chmod 777 /opt
+
 ADD ./files/s3cfg /opt/.s3cfg
 ADD ./files/main.sh /opt/main.sh
 
-# Main entrypoint script
-RUN chmod 777 /opt/main.sh
-
-# Folders for s3cmd optionations
+# Folders for s3cmd
 RUN mkdir /opt/src
 RUN mkdir /opt/dest
 
