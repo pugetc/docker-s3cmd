@@ -16,9 +16,7 @@ ADD ./files/main.sh /opt/main.sh
 RUN mkdir /opt/src
 RUN mkdir /opt/dest
 
-WORKDIR /
-
 # Add permissions
-RUN chmod -R 777 /
+RUN chmod -R 777 /opt
 
 CMD ["/opt/main.sh"]
