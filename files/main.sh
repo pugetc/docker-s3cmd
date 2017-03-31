@@ -28,8 +28,8 @@ fi
 # Replace key and secret in the /.s3cfg file with the one the user provided
 #
 echo "" >> /opt/.s3cfg
-echo "access_key=${aws_key}" >> /opt/.s3cfg
-echo "secret_key=${aws_secret}" >> /opt/.s3cfg
+echo "access_key = ${aws_key}" >> /opt/.s3cfg
+echo "secret_key = ${aws_secret}" >> /opt/.s3cfg
 
 #
 # Add region base host
