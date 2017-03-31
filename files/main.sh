@@ -4,6 +4,7 @@
 # main entry point to run s3cmd
 #
 S3CMD_PATH=/opt/s3cmd/s3cmd
+S3CMD_CONF=/opt/.s3cfg
 
 #
 # Check for required parameters
@@ -35,7 +36,7 @@ echo "secret_key=${aws_secret}" >> /opt/.s3cfg
 #
 echo "host_base = ${s3_host_base}" >> /opt/.s3cfg
 
-${S3CMD_PATH} ls
+${S3CMD_PATH} --config=${S3CMD_CONF} ls
 
 #
 # Finished operations
