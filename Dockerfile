@@ -19,4 +19,4 @@ RUN mkdir /opt/dest
 # Add permissions
 RUN chmod -R 777 /opt
 
-CMD ["/opt/main.sh"]
+ENTRYPOINT ["/bin/bash"]
