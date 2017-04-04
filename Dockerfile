@@ -20,4 +20,4 @@ RUN chmod -R 777 /.s3cfg
 
 WORKDIR /opt
 
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["/bin/bash"]
