@@ -7,7 +7,7 @@ RUN pip install python-dateutil
 RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd
 RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 
-ADD s3cfg /.s3cfg
+ADD s3cfg /root/.s3cfg
 #ADD ./files/main.sh /opt/main.sh
 
 # Folders for s3cmd
