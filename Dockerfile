@@ -10,7 +10,7 @@ RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 RUN apk add --no-cache mysql-client
 
 ADD s3cfg /.s3cfg
-#ADD ./files/main.sh /opt/main.sh
+ADD run.sh /opt/main.sh
 
 # Folders for s3cmd
 RUN mkdir /opt/src
@@ -23,4 +23,4 @@ RUN chmod -R 777 /.s3cfg
 WORKDIR /opt
 
 #CMD ["/bin/sh"]
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["/opt/main.sh"]
