@@ -21,5 +21,4 @@ RUN chmod -R 777 /opt
 
 WORKDIR /opt
 
-#CMD ["/bin/sh"]
-ENTRYPOINT ["/opt/run.sh"]
+CMD ["/opt/run.sh"]
