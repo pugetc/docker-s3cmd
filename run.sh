@@ -57,11 +57,9 @@ echo "Uploading the new backup to OBOS..."
 s3cmd put -f ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M').sql.gz ${s3_host_bucket}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M').sql.gz
 echo "New backup uploaded."
 
-echo ""
 echo "Removing old backup ..."
 s3cleanup ${s3_host_bucket}/${MYSQL_DATABASE}/ ${MYSQLDUMP_HISTORY_LIMIT}
 echo "Old backup removed."
-echo ""
 
 }
 
