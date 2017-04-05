@@ -84,6 +84,17 @@ objects:
                   - -c
                   - |
                     /opt/run.sh
+                    echo "Starting the new MySQL DB dump locally ..."
+                    mkdir -p ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
+                    mysqldump --host=${MYSQL_SERVICE_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE} | gzip > ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M').sql.gz
+                    echo "DB dump finished."
+                    echo "Starting the cleanup of old dump files ..."
+                    cd ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
+                    (ls -t ${MYSQL_DATABASE}_*.sql.gz|head -n ${MYSQLDUMP_HISTORY_LIMIT};ls ${MYSQL_DATABASE}_*.sql.gz)|sort|uniq -u|sed -e 's,.*,\"&\",g'|xargs -r rm
+                    echo "Cleanup finished."
+                    echo "Uploading the new backup to OBOS..."
+                    s3cmd sync ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/ ${s3_host_bucket}/${MYSQL_DATABASE}/
+                    echo "New backup uploaded."
                 env:
                   -
                     name: "MYSQL_USER"
