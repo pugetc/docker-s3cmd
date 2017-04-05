@@ -7,4 +7,4 @@ echo "host_base = ${s3_host_base}" >> /opt/.s3cfg
 echo "host_bucket = ${s3_host_bucket}" >> /opt/.s3cfg
 echo "use_https = ${s3_host_use_https}" >> /opt/.s3cfg
 
-exec tail -f /dev/null
+#exec tail -f /dev/null
