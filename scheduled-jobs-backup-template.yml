@@ -1,0 +1,195 @@
+##################
+# BEGIN TEMPLATE #
+##################
+apiVersion: v1
+kind: Template
+metadata:
+  name: scheduled-jobs-backup-template
+  annotations:
+    description: "Create a scheduledjob to backup data in a project"
+labels:
+  template: "scheduled-jobs-backup-template"
+objects:
+########################
+### Layer 1: Builds ####
+########################
+- kind: "BuildConfig"
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      app: "${APPLICATION_NAME}"
+      annotations: 
+        description: "Defines how to build the application"
+  spec:
+    source:
+      type: "Git"
+      git:
+        uri: "${SOURCE_REPOSITORY_URL}"
+    strategy:
+      type: "Docker"
+    output:
+      to:
+        kind: "ImageStreamTag"
+        name: "${APPLICATION_NAME}:latest"
+    triggers:
+      - type: "ImageChange"
+      - type: "ConfigChange"
+###################
+# Layer 2: Images #
+###################
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: "${APPLICATION_NAME}"
+    labels:
+      app: "${APPLICATION_NAME}"
+    annotations:
+      description: "Resulting Docker Image after the buid."
+  spec:
+    tags:
+      -
+        tag: latest
+# +++++++++++++++++++++++++++++++++
+# ++++++ LAYER 4 ABSTRACTIONS +++++
+# +++++++++++++++++++++++++++++++++
+#################
+# Scheduled Job #
+#################
+- kind: ScheduledJob
+  apiVersion: batch/v2alpha1
+  metadata:
+    name: scheduled-jobs-backup
+  spec:
+    schedule: ${SCHEDULED_VALUE}
+    jobTemplate:
+      spec:
+        template:
+          spec:
+            activeDeadlineSeconds: 600
+            volumes:
+              -
+                name: "${MYSQL_VOL_NAME}"
+                persistentVolumeClaim:
+                  claimName: "${MYSQL_PVC_NAME}"
+            containers:
+              - name: scheduled-jobs-backup
+                image: 172.30.97.45:5000/${PROJECT_NAME}/scheduled-jobs-backup:latest
+                volumeMounts:
+                  -
+                    name: "${MYSQL_VOL_NAME}"
+                    mountPath: /var/lib/mysql/data
+                command: 
+                  - /bin/sh
+                  - -c
+                  - |
+                    /opt/run.sh
+                env:
+                  -
+                    name: "MYSQL_USER"
+                    value: "${MYSQL_USER}"
+                  -
+                    name: "MYSQL_PASSWORD"
+                    value: "${MYSQL_PASSWORD}"
+                  -
+                    name: "MYSQL_DATABASE"
+                    value: "${MYSQL_DATABASE}"
+                  -
+                    name: MYSQL_SERVICE_HOST
+                    value: "${MYSQL_SERVICE_HOST}"
+                  - 
+                    name: MYSQLDUMP_HISTORY_LIMIT
+                    value: "${MYSQLDUMP_HISTORY_LIMIT}"
+                  - 
+                    name: MYSQLDUMP_DIRECTORY
+                    value: /var/lib/mysql/data/backup
+                  - 
+                    name: S3CMD_CONFIG
+                    value: /opt/.s3cfg
+                  - 
+                    name: "aws_key"
+                    value: "${ACCOUNT_KEY}"
+                  - 
+                    name: "aws_secret"
+                    value: "${ACCOUNT_SECRET}"
+                  - 
+                    name: "s3_host_base"
+                    value: "${S3_SERVER_HOST}"
+                  - 
+                    name: "s3_host_bucket"
+                    value: "s3://${S3_BUCKET_NAME}.${S3_SERVER_HOST}"
+                  - 
+                    name: "s3_host_use_https"
+                    value: "${S3_SERVER_HTTPS}"
+            restartPolicy: OnFailure
+##############
+# Parameters #
+##############
+parameters:
+- name: APPLICATION_NAME
+  displayName: "Application name"
+  description: "The name assigned to all of the objects defined in this template."
+  required: true
+  value: "scheduled-jobs-backup"
+- name: PROJECT_NAME  
+  displayName: "Project name"
+  description: "The name of your project."
+  required: true
+- name: "SOURCE_REPOSITORY_URL"
+  displayName: "Git Repository URL"
+  description: "The URL of the repository with your application source code."
+  value: "https://github.com/orangekmt/docker-s3cmd.git"
+- name: SCHEDULED_VALUE
+  displayName: " Scheduled Value"
+  description: "Value to set for the schedule (cron format)"
+  required: true
+  value: "*/10 * * * *"
+- name: ACCOUNT_KEY
+  displayName: "S3 Server Account Key"
+  description: "The key value used for user authentication to the S3 Server."
+  required: true
+- name: ACCOUNT_SECRET
+  displayName: "S3 Server Account Secret"
+  description: "The secret value used for password authentication to the S3 Server."
+  required: true
+- name: S3_SERVER_HOST
+  displayName: "S3 Server hostname"
+  description: "The hostname of the S3 Server."
+  required: true
+  value: storage.orange.com
+- name: S3_SERVER_HTTPS
+  displayName: "S3 Server HTTPS"
+  description: "Set the flag True for OBOS (uses HTTPS) and False for regular Scality S3 Server."
+  required: true
+  value: "True"
+- name: S3_BUCKET_NAME
+  displayName: "S3 Server bucket"
+  description: "The bucket name within the S3 Server."
+  required: true
+- name: "MYSQL_USER"
+  displayName: "Database username"
+  required: true
+  value: mysql
+- name: "MYSQL_PASSWORD"
+  displayName: "Database password"
+  required: true
+  value: mysql
+- name: "MYSQL_DATABASE"
+  displayName: "Database name"
+  required: true
+  value: sampledb
+- name: MYSQL_SERVICE_HOST
+  displayName: "Database service host IP address"
+  required: true
+- name: MYSQL_VOL_NAME
+  displayName: "Database Volume Mount name"
+  required: true
+  value: mysql-data
+- name: MYSQL_PVC_NAME
+  displayName: "Database Volume Mount name"
+  required: true
+  value: mysql  
+- name: MYSQLDUMP_HISTORY_LIMIT
+  displayName: "MySQL dump history limit"
+  required: true
+  value: "6"
