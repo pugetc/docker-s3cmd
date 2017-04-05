@@ -117,7 +117,7 @@ objects:
                     value: "${S3_SERVER_HOST}"
                   - 
                     name: "s3_host_bucket"
-                    value: "s3://${S3_BUCKET_NAME}.${S3_SERVER_HOST}"
+                    value: "s3://${S3_BUCKET_NAME}"
                   - 
                     name: "s3_host_use_https"
                     value: "${S3_SERVER_HTTPS}"
