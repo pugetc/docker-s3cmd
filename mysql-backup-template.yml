@@ -4,11 +4,11 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: scheduled-jobs-backup-template
+  name: "mysql-backup-template"
   annotations:
     description: "Create a scheduledjob to backup data in a project"
 labels:
-  template: "scheduled-jobs-backup-template"
+  template: "mysql-backup-template"
 objects:
 ########################
 ### Layer 1: Builds ####
@@ -16,7 +16,7 @@ objects:
 - kind: "BuildConfig"
   apiVersion: v1
   metadata:
-    name: ${APPLICATION_NAME}
+    name: "${APPLICATION_NAME}"
     labels:
       app: "${APPLICATION_NAME}"
       annotations: 
@@ -59,7 +59,7 @@ objects:
 - kind: ScheduledJob
   apiVersion: batch/v2alpha1
   metadata:
-    name: scheduled-jobs-backup
+    name: ${APPLICATION_NAME}
   spec:
     schedule: ${SCHEDULED_VALUE}
     jobTemplate:
@@ -73,8 +73,8 @@ objects:
                 persistentVolumeClaim:
                   claimName: "${MYSQL_PVC_NAME}"
             containers:
-              - name: scheduled-jobs-backup
-                image: 172.30.97.45:5000/${PROJECT_NAME}/scheduled-jobs-backup:latest
+              - name: ${APPLICATION_NAME}
+                image: 172.30.97.45:5000/${PROJECT_NAME}/${APPLICATION_NAME}:latest
                 volumeMounts:
                   -
                     name: "${MYSQL_VOL_NAME}"
@@ -150,7 +150,7 @@ parameters:
   displayName: "Application name"
   description: "The name assigned to all of the objects defined in this template."
   required: true
-  value: "scheduled-jobs-backup"
+  value: "mysql-backup"
 - name: PROJECT_NAME  
   displayName: "Project name"
   description: "The name of your project."
