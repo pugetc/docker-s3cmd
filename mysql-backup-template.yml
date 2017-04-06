@@ -86,7 +86,7 @@ objects:
                     /opt/run.sh
                     echo "Starting the new MySQL DB dump locally ..."
                     mkdir -p ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
-                    mysqldump --host=${MYSQL_SERVICE_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE} | gzip > ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M').sql.gz
+                    mysqldump --host=${MYSQL_SERVICE_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE} | gzip > ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M%S').sql.gz
                     echo "DB dump finished."
                     echo "Starting the cleanup of old dump files ..."
                     cd ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
@@ -96,7 +96,7 @@ objects:
                     s3cmd sync ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/ ${s3_host_bucket}/${MYSQL_DATABASE}/
                     echo "New backup uploaded."
                     echo "Starting the cleanup of old bucket files in OBOS..."
-                    s3cmd expire ${s3_host_bucket} --expiry-days=${S3_BUCKET_RETENTION} --expiry-prefix=log/
+                    /opt/cleanup.sh
                     echo "Cleanup finished."
                 env:
                   -
