@@ -95,6 +95,9 @@ objects:
                     echo "Uploading the new backup to OBOS..."
                     s3cmd sync ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/ ${s3_host_bucket}/${MYSQL_DATABASE}/
                     echo "New backup uploaded."
+                    echo "Starting the cleanup of old bucket files in OBOS..."
+                    s3cmd expire ${s3_host_bucket} --expiry-days=${S3_BUCKET_RETENTION} --expiry-prefix=log/
+                    echo "Cleanup finished."
                 env:
                   -
                     name: "MYSQL_USER"
@@ -130,8 +133,14 @@ objects:
                     name: "s3_host_bucket"
                     value: "s3://${S3_BUCKET_NAME}"
                   - 
+                    name: S3_BUCKET_RETENTION
+                    value: "${S3_BUCKET_RETENTION}"
+                  - 
                     name: "s3_host_use_https"
                     value: "${S3_SERVER_HTTPS}"
+                  - 
+                    name: "s3_host_signature_v2"
+                    value: "${S3_SERVER_SIG_V2}"
             restartPolicy: OnFailure
 ##############
 # Parameters #
@@ -173,9 +182,18 @@ parameters:
   description: "Set the flag True for OBOS (uses HTTPS) and False for regular Scality S3 Server."
   required: true
   value: "True"
+- name: S3_SERVER_SIG_V2
+  displayName: "S3 Server Signature V2"
+  description: "Set the flag True for OBOS and False for regular Scality S3 Server."
+  required: true
+  value: "True"
 - name: S3_BUCKET_NAME
   displayName: "S3 Server bucket"
   description: "The bucket name within the S3 Server."
+- name: S3_BUCKET_RETENTION
+  displayName: "Bucket files retention limit (number of days)"
+  required: true
+  value: "6"
   required: true
 - name: "MYSQL_USER"
   displayName: "Database username"
@@ -201,6 +219,6 @@ parameters:
   required: true
   value: mysql  
 - name: MYSQLDUMP_HISTORY_LIMIT
-  displayName: "MySQL dump history limit"
+  displayName: "MySQL dump history limit (number of dump files)"
   required: true
   value: "6"
