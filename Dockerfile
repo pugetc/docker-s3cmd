@@ -11,6 +11,7 @@ RUN apk add --no-cache mysql-client
 
 ADD s3cfg /opt/.s3cfg
 ADD run.sh /opt/run.sh
+ADD cleanup.sh /opt/cleanup.sh
 
 # Folders for s3cmd
 RUN mkdir /opt/src
