@@ -169,7 +169,7 @@ parameters:
   displayName: " Scheduled Value"
   description: "Value to set for the schedule (cron format)"
   required: true
-  value: "* */1 * * *"
+  value: "20 * * * *"
 - name: ACCOUNT_KEY
   displayName: "S3 Server Account Key"
   description: "The key value used for user authentication to the S3 Server."
