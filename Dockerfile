@@ -11,6 +11,8 @@ RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 
 RUN apk add --no-cache mysql-client
 
+ADD oc /usr/bin/oc
+
 ADD s3cfg /opt/.s3cfg
 ADD run.sh /opt/run.sh
 ADD cleanup.sh /opt/cleanup.sh
@@ -21,6 +23,8 @@ RUN mkdir /opt/dest
 
 # Add permissions
 RUN chmod -R 777 /opt
+RUN chmod 777 /usr/bin/oc
+RUN chgrp -R 0 /usr/bin && chmod -R g+rwX /usr/bin
 
 WORKDIR /opt
 
