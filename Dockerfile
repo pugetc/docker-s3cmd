@@ -1,8 +1,8 @@
-FROM centos/python-27-centos7
+FROM centos/python-35-centos7
 
 USER root
 
-RUN yum install mysql
+RUN yum install -y mysql
 
 RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd
 RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
