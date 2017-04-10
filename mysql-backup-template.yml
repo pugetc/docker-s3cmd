@@ -10,6 +10,29 @@ metadata:
 labels:
   template: "mysql-backup-template"
 objects:
+###################
+# Service Account #
+###################
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ${APPLICATION_NAME}
+################
+# Role Binding #
+################
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    name: system:${APPLICATION_NAME}
+  roleRef:
+    name: kermit-user
+  subjects:
+  - kind: SystemUser
+    name: system:serviceaccounts:${PROJECT_NAME}:${APPLICATION_NAME}
+    namespace: ${PROJECT_NAME}
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:${APPLICATION_NAME}
 ########################
 ### Layer 1: Builds ####
 ########################
@@ -53,29 +76,6 @@ objects:
 # +++++++++++++++++++++++++++++++++
 # ++++++ LAYER 4 ABSTRACTIONS +++++
 # +++++++++++++++++++++++++++++++++
-###################
-# Service Account #
-###################
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: "${APPLICATION_NAME}"
-###################
-# Service Account #
-###################
-- apiVersion: v1
-  groupNames: null
-  kind: RoleBinding
-  metadata:
-    name: system:"${APPLICATION_NAME}"
-  roleRef:
-    name: kermit-user
-  subjects:
-  - kind: SystemUser
-    name: system:serviceaccounts:${PROJECT_NAME}:${APPLICATION_NAME}
-    namespace: ${PROJECT_NAME}
-  userNames:
-  - system:serviceaccount:${PROJECT_NAME}:${APPLICATION_NAME}
 #################
 # Scheduled Job #
 #################
