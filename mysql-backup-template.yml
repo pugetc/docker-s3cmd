@@ -53,6 +53,29 @@ objects:
 # +++++++++++++++++++++++++++++++++
 # ++++++ LAYER 4 ABSTRACTIONS +++++
 # +++++++++++++++++++++++++++++++++
+###################
+# Service Account #
+###################
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: "${APPLICATION_NAME}"
+###################
+# Service Account #
+###################
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    name: system:"${APPLICATION_NAME}"
+  roleRef:
+    name: kermit-user
+  subjects:
+  - kind: SystemUser
+    name: system:serviceaccounts:${PROJECT_NAME}:${APPLICATION_NAME}
+    namespace: ${PROJECT_NAME}
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:${APPLICATION_NAME}
 #################
 # Scheduled Job #
 #################
@@ -148,6 +171,7 @@ objects:
                     name: "s3_host_signature_v2"
                     value: "${S3_SERVER_SIG_V2}"
             restartPolicy: OnFailure
+            serviceAccountName: "${APPLICATION_NAME}"
 ##############
 # Parameters #
 ##############
