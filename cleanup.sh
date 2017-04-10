@@ -28,4 +28,32 @@ printf "\n\n"
 
 }
 
+jobcleanup()
+{
+
+oc login https://$KUBERNETES_PORT_443_TCP_ADDR:$KUBERNETES_SERVICE_PORT_HTTPS \
+  --token `cat /var/run/secrets/kubernetes.io/serviceaccount/token` \
+  --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  
+oc get jobs -n $1 | grep $2 > /tmp/jobs
+
+while read JOB_WITH_STATS
+do
+    JOB_NAME=$(eval echo "${JOB_WITH_STATS}" | awk '{print $1}')
+    SUCCESSFUL_RUN=$(eval echo "${JOB_WITH_STATS}" | awk '{print $3}')
+
+    if [ ${SUCCESSFUL_RUN} == "1" ]; then
+    
+            echo "Deleting old job ${JOB_NAME} !"
+            oc delete job ${JOB_NAME} -n $1
+
+    else
+      echo "\"${JOB_NAME}\" not ended yet!"
+    fi
+done < /tmp/jobs
+
+}
+
 s3cleanup ${s3_host_bucket}/${MYSQL_DATABASE}/ ${MYSQLDUMP_HISTORY_LIMIT}
+
+jobcleanup ${PROJECT_NAME} ${APPLICATION_NAME}
