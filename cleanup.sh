@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+export KUBECONFIG=/tmp/.kube
+
 s3cleanup()
 {
 
