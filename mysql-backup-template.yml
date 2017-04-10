@@ -109,7 +109,7 @@ objects:
                     /opt/run.sh
                     echo "Starting the new MySQL DB dump locally ..."
                     mkdir -p ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
-                    mysqldump --host=${MYSQL_SERVICE_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE} | gzip > ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M%S').sql.gz
+                    mysqldump --host=${MYSQL_SERVICE}.${PROJECT_NAME}.svc.cluster.local --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE} | gzip > ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}/${MYSQL_DATABASE}_$(date +'%Y%m%d_%H%M%S').sql.gz
                     echo "DB dump finished."
                     echo "Starting the cleanup of old dump files ..."
                     cd ${MYSQLDUMP_DIRECTORY}/${MYSQL_DATABASE}
@@ -237,9 +237,10 @@ parameters:
   displayName: "Database name"
   required: true
   value: sampledb
-- name: MYSQL_SERVICE_HOST
-  displayName: "Database service host IP address"
+- name: MYSQL_SERVICE
+  displayName: "Database service name"
   required: true
+  value: mysql
 - name: MYSQL_VOL_NAME
   displayName: "Database Volume Mount name"
   required: true
