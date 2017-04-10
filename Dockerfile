@@ -1,21 +1,13 @@
-FROM frolvlad/alpine-glibc:latest
+FROM centos/python-27-centos7
 
-RUN apk update
-RUN apk add python py-pip py-setuptools git ca-certificates
-RUN pip install python-dateutil
-
-RUN apk add --update coreutils && rm -rf /var/cache/apk/*
+RUN yum install mysql
 
 RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd
 RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 
-RUN apk add --no-cache mysql-client
-
-ADD oc /usr/bin/oc
-
-ADD s3cfg /opt/.s3cfg
-ADD run.sh /opt/run.sh
-ADD cleanup.sh /opt/cleanup.sh
+ADD s3cfg /opt
+ADD run.sh /opt
+ADD cleanup.sh /opt
 
 # Folders for s3cmd
 RUN mkdir /opt/src
