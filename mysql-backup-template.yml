@@ -169,7 +169,7 @@ parameters:
   displayName: " Scheduled Value"
   description: "Value to set for the schedule (cron format)"
   required: true
-  value: "*/10 * * * *"
+  value: "* */1 * * *"
 - name: ACCOUNT_KEY
   displayName: "S3 Server Account Key"
   description: "The key value used for user authentication to the S3 Server."
@@ -199,7 +199,7 @@ parameters:
 - name: S3_BUCKET_RETENTION
   displayName: "Bucket files retention limit (number of days)"
   required: true
-  value: "6"
+  value: "5"
   required: true
 - name: "MYSQL_USER"
   displayName: "Database username"
@@ -227,4 +227,4 @@ parameters:
 - name: MYSQLDUMP_HISTORY_LIMIT
   displayName: "MySQL dump history limit (number of dump files)"
   required: true
-  value: "6"
+  value: "4"
