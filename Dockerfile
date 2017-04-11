@@ -1,15 +1,18 @@
-FROM centos/python-35-centos7
-
-USER root
-
-RUN yum install -y mysql
+FROM python:alpine
 
 RUN git clone https://github.com/s3tools/s3cmd.git /opt/s3cmd
 RUN ln -s /opt/s3cmd/s3cmd /usr/bin/s3cmd
 
-ADD s3cfg /opt
-ADD run.sh /opt
-ADD cleanup.sh /opt
+RUN apk add --no-cache mysql-client
+RUN \
+echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+apk add --no-cache mongodb-tools
+
+ADD oc /usr/bin/oc
+
+ADD s3cfg /opt/.s3cfg
+ADD run.sh /opt/run.sh
+ADD cleanup.sh /opt/cleanup.sh
 
 # Folders for s3cmd
 RUN mkdir /opt/src
